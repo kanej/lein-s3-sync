@@ -1,6 +1,7 @@
 (ns leiningen.s3-sync
   (:require [pandect.core :as p]
-            [leiningen.s3 :as s3]))
+            [leiningen.s3 :as s3]
+            [leiningen.merge :as m]))
 
 ;; Get the list of local files
 ;; For each
@@ -26,7 +27,7 @@
          (map (partial path->file-details abs-root-dir-path))
          (set)
          (assoc dir-sync-description :local-file-details))))
- 
+
 (defn- relative-path [root target]
   (.replaceAll target (str "^" root "/") ""))
 
@@ -35,7 +36,7 @@
         rel-path (relative-path root-path absolute-path)
         md5 (p/md5-file absolute-path)]
     {:path rel-path :md5 md5}))
- 
+
 (defn analyse-sync-state [cred dir-path bucket-name]
   (let [local-file-state (analyse-local-directory dir-path)
         file-paths (->> local-file-state
@@ -44,7 +45,32 @@
         s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)] 
     (merge local-file-state s3-file-state)))
 
-(defn generate-deltas [local-file-details s3-file-details]
-  (let [upload-file-details (clojure.set/difference local-file-details s3-file-details)]
-    (set (map #(vector :upload %) upload-file-details))))
+(defn calculate-deltas-from [sync-state]
+  (let [local-file-details (:local-file-details sync-state)
+        s3-file-details (:remote-file-details sync-state)
+        deltas (m/generate-deltas local-file-details s3-file-details)]
+    (assoc sync-state :deltas deltas)))
+
+(defn resolve-full-path [root-path rel-path]
+  (let [root (clojure.java.io/file root-path)
+        combined (clojure.java.io/file root rel-path)
+        abs-path (.getAbsolutePath combined)]
+    abs-path))
+
+(defn push-changes-to-s3 [cred sync-state]
+  (let [deltas (:deltas sync-state)
+        local-root-path (:root-dir-path sync-state)
+        bucket-name (:bucket-name sync-state)]
+    (for [[op {rel-path :path}] deltas]
+      (s3/put-file 
+        cred
+        bucket-name
+        rel-path
+        (resolve-full-path local-root-path rel-path)))))
+
+(defn sync-to-s3 [cred dir-path bucket-name]
+  (let [authorised-s3-push (partial push-changes-to-s3 cred)]
+    (-> (analyse-sync-state cred dir-path bucket-name)
+        (calculate-deltas-from)
+        (authorised-s3-push))))
 

@@ -16,31 +16,3 @@
     (is (= 3 (count local-dir-details)))
     (is (= example-sync-state local-dir-details))))
 
-(deftest local-wins-merging-strategy
-
-  (testing "when all files match there are no deltas"
-    (let [deltas (sync/generate-deltas example-sync-state example-sync-state)]
-      (is (empty? deltas))))
-
-  (testing "when none of the files exist on s3 there is an upload delta for each"
-    (let [expected-deltas #{[:upload hello-file-sync-state]
-                            [:upload world-file-sync-state]
-                            [:upload subcontinent-file-sync-state]} 
-          deltas (sync/generate-deltas example-sync-state #{})]
-      (is (= expected-deltas deltas))))
-
-  (testing "when some of the files exist on s3 there is only a delta for the missing ones"
-    (let [expected-deltas #{[:upload world-file-sync-state]
-                            [:upload subcontinent-file-sync-state]}
-          remote-sync-state #{hello-file-sync-state} 
-          actual-deltas (sync/generate-deltas example-sync-state remote-sync-state)]
-      (is (= expected-deltas actual-deltas))))
-
-  (testing "when some of the local have a changed hash a delta is create for each"
-    (let [expected-deltas #{[:upload hello-file-sync-state]}
-          remote-sync-state #{(assoc hello-file-sync-state :md5 "out-of-date")
-                              world-file-sync-state
-                              subcontinent-file-sync-state}
-          actual-deltas (sync/generate-deltas example-sync-state remote-sync-state)]
-      (is (= expected-deltas actual-deltas)))))
-
