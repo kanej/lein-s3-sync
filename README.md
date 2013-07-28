@@ -1,25 +1,33 @@
 # lein-s3-sync
 
-A Leiningen plugin to do many wonderful things.
+A Leiningen plugin to synchronise the file contents of a local folder
+to Amazon's S3 service.
+
+Currently only local push to S3 is supported, with upload happening if
+the file doesn't exist on S3 or its MD5 hash doesn't match.
 
 ## Usage
-
-FIXME: Use this for user-level plugins:
 
 Put `[lein-s3-sync "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
 lein-s3-sync 0.1.0-SNAPSHOT`.
 
-FIXME: Use this for project-level plugins:
+Add to your profile a s3-sync map, specifying your S3 credential, the 
+bucket to upload to and the local directory to synce:
 
-Put `[lein-s3-sync "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
+    :s3-sync {
+      :access-key "..."
+      :secret-key "..."
+      :local-dir  "./out"
+      :bucket     "mybucket"
+    }
 
-FIXME: and add an example usage that actually makes sense:
+With the profile map setup, run a sync at the command line:
 
     $ lein s3-sync
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013 John Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
