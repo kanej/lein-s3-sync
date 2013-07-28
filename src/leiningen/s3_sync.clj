@@ -3,12 +3,14 @@
             [leiningen.s3 :as s3]
             [leiningen.merge :as m]))
 
-;; Get the list of local files
-;; For each
-;;   check whether the file exists on s3
-;;   if not then upload
-;;   if it does check whether the md5 hashes match
-;;     if not then upload  
+(declare sync-to-s3)
+
+(defn s3-sync [{config :s3-sync} & keys]
+  (let [cred (select-keys config [:access-key :secret-key])
+        dir-path (:local-dir config)
+        bucket-name (:bucket config)]
+    (sync-to-s3 cred dir-path bucket-name)
+    (flush)))
 
 (declare relative-path)
 (declare path->file-details)
