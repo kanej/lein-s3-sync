@@ -60,15 +60,18 @@
     abs-path))
 
 (defn push-changes-to-s3 [cred sync-state]
-  (let [deltas (:deltas sync-state)
-        local-root-path (:root-dir-path sync-state)
+  (let [local-root-path (:root-dir-path sync-state)
         bucket-name (:bucket-name sync-state)]
-    (for [[op {rel-path :path}] deltas]
-      (s3/put-file 
-        cred
-        bucket-name
-        rel-path
-        (resolve-full-path local-root-path rel-path)))))
+    (loop [deltas (:deltas sync-state)]
+      (if (not (empty? deltas)) 
+        (let [[op {rel-path :path}] (first deltas)]
+          (println rel-path)
+          (s3/put-file 
+            cred
+            bucket-name
+            rel-path
+            (resolve-full-path local-root-path rel-path))
+          (recur (rest deltas)))))))
 
 (defn sync-to-s3 [cred dir-path bucket-name]
   (let [authorised-s3-push (partial push-changes-to-s3 cred)]

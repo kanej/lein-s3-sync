@@ -3,6 +3,8 @@ TODO
 
 * [X] Hookup functionality to lein plugin
 * [X] Figure out project config details
+* [ ] Better console output
+* [ ] Document usage
 
 Bugs
 ----
@@ -21,5 +23,4 @@ Enhancements
 ------------
 
 * [ ] Allow specifying the bucket/local dir from command line
-* [ ] Better console output
 * [ ] Other merging strategys
