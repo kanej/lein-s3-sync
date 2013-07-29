@@ -16,14 +16,18 @@
   {:path (:key response) :md5 (:etag response)} )
 
 (defn analyse-s3-bucket [cred bucket-name file-paths]
+  
   (let [s3-lookup (partial get-file-details-for cred bucket-name)
-        bucket-sync-state {:bucket-name bucket-name} ]
-    (->> file-paths
-         (map s3-lookup)
-         (map response->file-details)
-         (remove nil?)
-         (set)
-         (assoc bucket-sync-state :remote-file-details))))
+        bucket-sync-state {:bucket-name bucket-name
+                           :remote-file-details []}]
+    (if-not (s3/bucket-exists? cred bucket-name)
+      (assoc bucket-sync-state :errors [(str "No bucket " bucket-name)])
+      (->> file-paths
+           (map s3-lookup)
+           (map response->file-details)
+           (remove nil?)
+           (set)
+           (assoc bucket-sync-state :remote-file-details)))))
 
 (defn put-file [cred bucket-name key file-path]
   (let [file (clojure.java.io/file file-path)]

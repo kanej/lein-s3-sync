@@ -3,14 +3,15 @@ TODO
 
 * [X] Hookup functionality to lein plugin
 * [X] Figure out project config details
-* [ ] Better console output
+* [X] Better console output
+* [ ] Allow specifying the bucket/local dir from command line
 * [ ] Document usage
 
 Bugs
 ----
 
 * [X] Error when new file is encountered locally
-* [ ] Does not deal with no bucket well
+* [X] Does not deal with no bucket well
 
 Integrations test
 -----------------
@@ -22,5 +23,4 @@ Integrations test
 Enhancements
 ------------
 
-* [ ] Allow specifying the bucket/local dir from command line
 * [ ] Other merging strategys

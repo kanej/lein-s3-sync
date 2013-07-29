@@ -5,6 +5,8 @@
 
 (declare sync-to-s3)
 
+(def padding "                                           ")
+
 (defn s3-sync [{config :s3-sync} & keys]
   (let [cred (select-keys config [:access-key :secret-key])
         dir-path (:local-dir config)
@@ -48,11 +50,13 @@
         s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)] 
     (merge local-file-state s3-file-state)))
 
-(defn calculate-deltas-from [sync-state]
-  (let [local-file-details (:local-file-details sync-state)
-        s3-file-details (:remote-file-details sync-state)
-        deltas (m/generate-deltas local-file-details s3-file-details)]
-    (assoc sync-state :deltas deltas)))
+(defn calculate-deltas-from [{:keys [errors] :as sync-state}]
+  (if (empty? errors)
+    (let [local-file-details (:local-file-details sync-state)
+          s3-file-details (:remote-file-details sync-state)
+          deltas (m/generate-deltas local-file-details s3-file-details)]
+      (assoc sync-state :deltas deltas))
+    sync-state))
 
 (defn resolve-full-path [root-path rel-path]
   (let [root (clojure.java.io/file root-path)
@@ -60,32 +64,35 @@
         abs-path (.getAbsolutePath combined)]
     abs-path))
 
-(defn push-changes-to-s3 [cred sync-state]
-  (let [local-root-path (:root-dir-path sync-state)
-        bucket-name (:bucket-name sync-state)]
-    (loop [deltas (:deltas sync-state)]
-      (if (not (empty? deltas)) 
-        (let [[op {rel-path :path}] (first deltas)]
-          (print "  " rel-path "uploading ...")
-          (s3/put-file 
-            cred
-            bucket-name
-            rel-path
-            (resolve-full-path local-root-path rel-path))
-          (println "\r  " rel-path "done.        ")
-          (recur (rest deltas)))))
-    sync-state))
+(defn push-changes-to-s3 [cred {:keys [errors] :as sync-state}]
+  (when (empty? errors)
+    (let [local-root-path (:root-dir-path sync-state)
+          bucket-name (:bucket-name sync-state)]
+      (loop [deltas (:deltas sync-state)]
+        (if (not (empty? deltas)) 
+          (let [[op {rel-path :path}] (first deltas)]
+            (print "  " rel-path "uploading ...")
+            (s3/put-file 
+              cred
+              bucket-name
+              rel-path
+              (resolve-full-path local-root-path rel-path))
+            (println "\r  " rel-path "done." padding)
+            (recur (rest deltas)))))))
+  sync-state)
 
-(defn- print-sync-state [{:keys [deltas] :as sync-state}]
+(defn- print-sync-state [{:keys [errors deltas] :as sync-state}]
   (cond
-    (empty? deltas) (println "\rThere are no local changes to push.                      ")
+    (not (empty? errors)) nil
+    (empty? deltas) (println "\rThere are no local changes to push." padding)
     (= 1 (count deltas)) (println "\nThere is 1 local file change to upload:")
     :default (println "\nThere are" (count deltas)  "local file changes to upload:"))
   sync-state)
 
-(defn- print-complete-message [{:keys [deltas]}]
-  (if (not  (empty? deltas)) 
-    (println "Sync complete.")))
+(defn- print-complete-message [{:keys [errors deltas]}]
+  (cond 
+    (not (empty? errors)) (println (str "\r"  (first errors) padding))
+    (not (empty? deltas)) (println "Sync complete.")))
 
 (defn sync-to-s3 [cred dir-path bucket-name]
   (let [authorised-s3-push (partial push-changes-to-s3 cred)]
