@@ -9,6 +9,7 @@
   (let [cred (select-keys config [:access-key :secret-key])
         dir-path (:local-dir config)
         bucket-name (:bucket config)]
+    (print (str "Syncing bucket " bucket-name " with directory " dir-path))
     (sync-to-s3 cred dir-path bucket-name)
     (flush)))
 
@@ -65,17 +66,32 @@
     (loop [deltas (:deltas sync-state)]
       (if (not (empty? deltas)) 
         (let [[op {rel-path :path}] (first deltas)]
-          (println rel-path)
+          (print "  " rel-path "uploading ...")
           (s3/put-file 
             cred
             bucket-name
             rel-path
             (resolve-full-path local-root-path rel-path))
-          (recur (rest deltas)))))))
+          (println "\r  " rel-path "done.        ")
+          (recur (rest deltas)))))
+    sync-state))
+
+(defn- print-sync-state [{:keys [deltas] :as sync-state}]
+  (cond
+    (empty? deltas) (println "\rThere are no local changes to push.                      ")
+    (= 1 (count deltas)) (println "\nThere is 1 local file change to upload:")
+    :default (println "\nThere are" (count deltas)  "local file changes to upload:"))
+  sync-state)
+
+(defn- print-complete-message [{:keys [deltas]}]
+  (if (not  (empty? deltas)) 
+    (println "Sync complete.")))
 
 (defn sync-to-s3 [cred dir-path bucket-name]
   (let [authorised-s3-push (partial push-changes-to-s3 cred)]
     (-> (analyse-sync-state cred dir-path bucket-name)
         (calculate-deltas-from)
-        (authorised-s3-push))))
+        (print-sync-state)
+        (authorised-s3-push)
+        (print-complete-message))))
 
