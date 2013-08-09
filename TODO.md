@@ -23,4 +23,5 @@ Integrations test
 Enhancements
 ------------
 
+* [ ] Support lein style credentials e.g. like s3-wagon
 * [ ] Other merging strategys
