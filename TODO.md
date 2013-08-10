@@ -12,6 +12,7 @@ Bugs
 
 * [X] Error when new file is encountered locally
 * [X] Does not deal with no bucket well
+* [ ] Exception if no config given in project.clj
 
 Integrations test
 -----------------
@@ -23,6 +24,7 @@ Integrations test
 Enhancements
 ------------
 
+* [ ] White and blacklists
 * [ ] Support lein style credentials e.g. like s3-wagon
 * [ ] Other merging strategys
 
