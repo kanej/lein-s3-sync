@@ -16,12 +16,13 @@ Bugs
 Integrations test
 -----------------
 
-* [ ] Figure out how to exclude integration tests
-* [ ] Figure out keeping credentials out of git for test
-* [ ] Write a complete integration test
+* [X] Figure out how to exclude integration tests
+* [X] Figure out keeping credentials out of git for test
+* [X] Write a complete integration test
 
 Enhancements
 ------------
 
 * [ ] Support lein style credentials e.g. like s3-wagon
 * [ ] Other merging strategys
+
