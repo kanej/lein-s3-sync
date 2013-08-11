@@ -12,7 +12,7 @@ Bugs
 
 * [X] Error when new file is encountered locally
 * [X] Does not deal with no bucket well
-* [ ] Exception if no config given in project.clj
+* [X] Exception if no config given in project.clj
 * [X] More tasks than just s3-sync appear in lein listing.
 
 Integrations test

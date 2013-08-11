@@ -1,5 +1,7 @@
 (ns leiningen.s3-sync
-  (:require [leiningen.s3-sync.file-system :as fs]
+  (:require [leiningen.core.main :as lein]
+            [leiningen.s3-sync.commandline :as cl]
+            [leiningen.s3-sync.file-system :as fs]
             [leiningen.s3-sync.s3 :as s3]
             [leiningen.s3-sync.merge :as m]))
 
@@ -7,13 +9,16 @@
 
 (def padding "                                           ")
 
-(defn s3-sync [{config :s3-sync} & keys]
-  (let [cred (select-keys config [:access-key :secret-key])
-        dir-path (:local-dir config)
-        bucket-name (:bucket config)]
-    (print (str "Syncing bucket " bucket-name " with directory " dir-path))
-    (sync-to-s3 cred dir-path bucket-name)
-    (flush)))
+(defn s3-sync [project & keys]
+  (let [[valid config errors] (cl/resolve-config project keys)]
+    (if (not valid)
+      (lein/abort (first errors))
+      (let [cred (select-keys config [:access-key :secret-key])
+            dir-path (:local-dir config)
+            bucket-name (:bucket config)]
+        (print (str "Syncing bucket " bucket-name " with directory " dir-path))
+        (sync-to-s3 cred dir-path bucket-name)
+        (flush)))))
 
 (defn analyse-sync-state [cred dir-path bucket-name]
   (let [local-file-state (fs/analyse-local-directory dir-path)
