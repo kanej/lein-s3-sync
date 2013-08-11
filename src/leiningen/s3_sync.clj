@@ -1,7 +1,7 @@
 (ns leiningen.s3-sync
-  (:require [pandect.core :as p]
-            [leiningen.s3 :as s3]
-            [leiningen.merge :as m]))
+  (:require [leiningen.s3-sync.file-system :as fs]
+            [leiningen.s3-sync.s3 :as s3]
+            [leiningen.s3-sync.merge :as m]))
 
 (declare sync-to-s3)
 
@@ -15,35 +15,8 @@
     (sync-to-s3 cred dir-path bucket-name)
     (flush)))
 
-(declare relative-path)
-(declare path->file-details)
-
-(defn analyse-local-directory
-  "Analyse a local directory returnings a set
-   of file details describing the relative path
-   and md5 checksum of all the files (recursively)
-   under the directory."
-  [dir-path]
-  (let [root-dir (clojure.java.io/file dir-path)
-        abs-root-dir-path (.getAbsolutePath root-dir)
-        dir-sync-description {:root-dir-path abs-root-dir-path}]
-    (->> (file-seq root-dir)
-         (filter #(not (.isDirectory %)))
-         (map (partial path->file-details abs-root-dir-path))
-         (set)
-         (assoc dir-sync-description :local-file-details))))
-
-(defn- relative-path [root target]
-  (.replaceAll target (str "^" root "/") ""))
-
-(defn- path->file-details [root-path file]
-  (let [absolute-path (.getAbsolutePath file)
-        rel-path (relative-path root-path absolute-path)
-        md5 (p/md5-file absolute-path)]
-    {:path rel-path :md5 md5}))
-
 (defn analyse-sync-state [cred dir-path bucket-name]
-  (let [local-file-state (analyse-local-directory dir-path)
+  (let [local-file-state (fs/analyse-local-directory dir-path)
         file-paths (->> local-file-state
                        (:local-file-details)
                        (map :path))

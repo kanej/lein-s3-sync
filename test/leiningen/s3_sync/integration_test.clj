@@ -1,4 +1,4 @@
-(ns ^:integration leiningen.integration-test
+(ns ^:integration leiningen.s3-sync.integration-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
             [aws.sdk.s3 :as s3]

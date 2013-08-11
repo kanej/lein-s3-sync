@@ -1,4 +1,4 @@
-(ns leiningen.s3
+(ns leiningen.s3-sync.s3
   (:require [aws.sdk.s3 :as s3]))
 
 (defn get-file-details-for

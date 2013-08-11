@@ -1,6 +1,6 @@
-(ns leiningen.merge-test
+(ns leiningen.s3-sync.merge-test
   (:require [clojure.test :refer :all]
-            [leiningen.merge :as m]))
+            [leiningen.s3-sync.merge :as m]))
 
 (def hello-file-sync-state {:path "hello.txt" :md5 "09f7e02f1290be211da707a266f153b3"})
 (def world-file-sync-state {:path "world.txt" :md5 "52f83ff6877e42f613bcd2444c22528c"})

@@ -1,6 +1,6 @@
-(ns leiningen.s3-sync-test
+(ns leiningen.s3-sync.file-system-test
   (:require [clojure.test :refer :all]
-            [leiningen.s3-sync :as sync]))
+            [leiningen.s3-sync.file-system :as fs]))
 
 (def hello-file-sync-state {:path "hello.txt" :md5 "09f7e02f1290be211da707a266f153b3"})
 (def world-file-sync-state {:path "world.txt" :md5 "52f83ff6877e42f613bcd2444c22528c"})
@@ -12,7 +12,7 @@
     subcontinent-file-sync-state})
 
 (deftest resolving-the-md5-of-each-file-in-a-dir
-  (let [local-dir-details (:local-file-details (sync/analyse-local-directory "test/example"))]
+  (let [local-dir-details (:local-file-details (fs/analyse-local-directory "test/example"))]
     (is (= 3 (count local-dir-details)))
     (is (= example-sync-state local-dir-details))))
 
