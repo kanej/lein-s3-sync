@@ -4,7 +4,7 @@ TODO
 * [X] Hookup functionality to lein plugin
 * [X] Figure out project config details
 * [X] Better console output
-* [ ] Allow specifying the bucket/local dir from command line
+* [X] Allow specifying the bucket/local dir from command line
 * [ ] Document usage
 
 Bugs
