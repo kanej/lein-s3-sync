@@ -1,4 +1,4 @@
-# lein-s3-sync
+# lein-s3-sync [![Build Status](https://travis-ci.org/kanej/lein-s3-sync.png)](https://travis-ci.org/kanej/lein-s3-sync)
 
 A Leiningen plugin to synchronise the file contents of a local folder
 to Amazon's S3 service.
