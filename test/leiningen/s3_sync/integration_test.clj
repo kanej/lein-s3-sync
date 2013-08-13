@@ -7,10 +7,11 @@
 (def integration-bucket "s3-sync-integration-test")
 
 (def cred 
-  (-> (slurp "profiles.clj")
-      (read-string)
-      (get-in [:dev :s3-sync])
-      (select-keys [:access-key :secret-key])))
+  (when (.exists (clojure.java.io/file "profiles.clj"))
+    (-> (slurp "profiles.clj")
+        (read-string)
+        (get-in [:dev :s3-sync])
+        (select-keys [:access-key :secret-key]))))
 
 (declare setup-tmp-dir)
 (declare delete-tmp-dir)
