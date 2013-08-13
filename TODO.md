@@ -5,7 +5,7 @@ TODO
 * [X] Figure out project config details
 * [X] Better console output
 * [X] Allow specifying the bucket/local dir from command line
-* [ ] Document usage
+* [X] Document usage
 
 Bugs
 ----
