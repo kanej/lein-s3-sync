@@ -12,10 +12,10 @@
 (defn s3-sync
   "Synchronise a directory with a bucket on Amazon's S3.
   
-   The sync is operates recursively within the local
+   The sync operates recursively within the local
    file directory. Files are compared by MD5 hash with
    their remote equivalent and pushed if it does not
-   exist or has been changed locally. The synchonisation
+   exist or has been changed locally. The synchronisation
    is controlled by config specified on the command line
    or in the project.clj:
   
@@ -24,7 +24,7 @@
              :bucket \"my-bucket\"
              :local-dir \"out/public\"}
   
-  The bucket name given must exist and be accessible."
+  The bucket given must exist and be accessible."
   [project & keys]
   (let [[valid config errors] (cl/resolve-config project keys)]
     (if (not valid)

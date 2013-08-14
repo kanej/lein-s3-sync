@@ -1,23 +1,27 @@
 # lein-s3-sync [![Build Status](https://travis-ci.org/kanej/lein-s3-sync.png)](https://travis-ci.org/kanej/lein-s3-sync)
 
-A Leiningen plugin to synchronise the file contents of a local folder
-to Amazon's S3 service.
+A Leiningen plugin to synchronise the contents of a local folder
+to a bucket on Amazon's S3 service.
 
-Currently only local push to S3 is supported, with upload happening if
-the file doesn't exist on S3 or its MD5 hash doesn't match.
+The sync operates recursively within the local file directory.
+Files are compared by MD5 hash with their remote equivalent and
+pushed if it does not exist or has been changed locally.
+
+Useful for pushing the html/js/css output files of a leiningen project
+to S3 for hosting.
 
 ## Usage
 
-Put `[lein-s3-sync "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your
+Put `[lein-s3-sync "0.1.0"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
-lein-s3-sync 0.1.0-SNAPSHOT`.
+lein-s3-sync 0.1.0`.
 
-Add to your profile a s3-sync map, specifying your S3 credential, the 
-bucket to upload to and the local directory to synce:
+Add to your profile an s3-sync config map, specifying your S3 credentials,
+the bucket to upload to and the local directory to sync:
 
     :s3-sync {
-      :access-key "..."
-      :secret-key "..."
+      :access-key "XXX"
+      :secret-key "XXX"
       :local-dir  "./out"
       :bucket     "mybucket"
     }
@@ -25,6 +29,11 @@ bucket to upload to and the local directory to synce:
 With the profile map setup, run a sync at the command line:
 
     $ lein s3-sync
+
+Alternatively, any of the :s3-sync keys can be overriden on the command
+line:
+
+    $ lein s3-sync :local-dir "./out/public" :bucket "www.mywebsite.com"
 
 ## License
 
