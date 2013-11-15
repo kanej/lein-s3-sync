@@ -13,3 +13,4 @@ pom.xml.asc
 .DS_Store
 dev.sh
 profiles.clj
+scratch.clj
