@@ -18,14 +18,14 @@ FIXME
 
 With Leiningen:
 
-    [me.kanej/s3-sync "0.1.0-SNAPSHOT"]
+    [me.kanej/s3-sync "0.2.0"]
 
 With Maven:
 
     <dependency>
       <groupId>me.kanej</groupId>
       <artifactId>s3-sync</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>0.2.0</version>
     </dependency>
 
 ## License

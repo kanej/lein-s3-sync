@@ -10,7 +10,7 @@ pushed if it does not exist or has been changed locally.
 Useful for pushing the html/js/css output files of a leiningen project
 to S3 for hosting.
 
-The synchronisation functionality is available as a separate lib `s3-sync`, please see the [README](https://github.com/kanej/lein-s3-sync/blob/master/s3-sync) in this repos subfolder.
+The synchronisation functionality is available as a separate lib `s3-sync`, please see the [README](https://github.com/kanej/lein-s3-sync/blob/master/s3-sync) in this repo's subfolder.
 
 ## Usage
 
