@@ -20,23 +20,23 @@ lein-s3-sync 0.1.0`.
 
 Add to your profile an s3-sync config map, specifying your S3 credentials,
 the bucket to upload to and the local directory to sync:
-
-    :s3-sync {
-      :access-key "XXX"
-      :secret-key "XXX"
-      :local-dir  "./out"
-      :bucket     "mybucket"
-    }
-
+```clojure
+:s3-sync {
+  :access-key "XXX"
+  :secret-key "XXX"
+  :local-dir  "./out"
+  :bucket     "mybucket"
+}
+```
 With the profile map setup, run a sync at the command line:
-
+```bash
     $ lein s3-sync
-
+```
 Alternatively, any of the :s3-sync keys can be overriden on the command
 line:
-
+```bash
     $ lein s3-sync :local-dir "./out/public" :bucket "www.mywebsite.com"
-
+```
 ## License
 
 Copyright © 2013 John Kane
