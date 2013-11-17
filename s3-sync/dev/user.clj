@@ -12,6 +12,10 @@
             ))
 
 (def aws-credentials
-  (get-in (read-string (slurp "profiles.clj")) [:dev :s3-sync]))
+  (when (.exists (clojure.java.io/file "profiles.clj"))
+    (-> (slurp "profiles.clj")
+        (read-string)
+        (get-in [:dev :s3-sync])
+        (select-keys [:access-key :secret-key]))))
 
 (def local-file-details (fs/analyse-local-directory "test/example"))
