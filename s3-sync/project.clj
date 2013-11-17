@@ -14,5 +14,4 @@
                    :integration :integration
                    :all (constantly true)}
   :repl-options {:port 58000
-
                  :nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]})

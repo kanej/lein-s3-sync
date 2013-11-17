@@ -12,5 +12,6 @@
 **/.lein-failures
 **/.lein-plugins
 **/.lein-repl-history
+**/.nrepl-port
 **/profiles.clj
 **/dev.sh
