@@ -1,47 +1,16 @@
-(ns leiningen.s3-sync
-  (:require [leiningen.core.main :as lein]
-            [leiningen.s3-sync.commandline :as cl]
-            [leiningen.s3-sync.file-system :as fs]
-            [leiningen.s3-sync.s3 :as s3]
-            [leiningen.s3-sync.merge :as m]))
-
-(declare sync-to-s3)
+(ns me.kanej.s3-sync
+  (:require [me.kanej.s3-sync.file-system :as fs]
+            [me.kanej.s3-sync.s3 :as s3]
+            [me.kanej.s3-sync.merge :as m]))
 
 (def padding "                                           ")
-
-(defn s3-sync
-  "Synchronise a directory with a bucket on Amazon's S3.
-  
-   The sync operates recursively within the local
-   file directory. Files are compared by MD5 hash with
-   their remote equivalent and pushed if it does not
-   exist or has been changed locally. The synchronisation
-   is controlled by config specified on the command line
-   or in the project.clj:
-  
-   :s3-sync {:access-key \"XXX\"
-             :secret-key \"XXX\"
-             :bucket \"my-bucket\"
-             :local-dir \"out/public\"}
-  
-  The bucket given must exist and be accessible."
-  [project & keys]
-  (let [[valid config errors] (cl/resolve-config project keys)]
-    (if (not valid)
-      (lein/abort (first errors))
-      (let [cred (select-keys config [:access-key :secret-key])
-            dir-path (:local-dir config)
-            bucket-name (:bucket config)]
-        (print (str "Syncing bucket " bucket-name " with directory " dir-path))
-        (sync-to-s3 cred dir-path bucket-name)
-        (flush)))))
 
 (defn analyse-sync-state [cred dir-path bucket-name]
   (let [local-file-state (fs/analyse-local-directory dir-path)
         file-paths (->> local-file-state
                        (:local-file-details)
                        (map :path))
-        s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)] 
+        s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)]
     (merge local-file-state s3-file-state)))
 
 (defn calculate-deltas-from [{:keys [errors] :as sync-state}]
@@ -63,10 +32,10 @@
     (let [local-root-path (:root-dir-path sync-state)
           bucket-name (:bucket-name sync-state)]
       (loop [deltas (:deltas sync-state)]
-        (if (not (empty? deltas)) 
+        (if (not (empty? deltas))
           (let [[op {rel-path :path}] (first deltas)]
             (print "  " rel-path "uploading ...")
-            (s3/put-file 
+            (s3/put-file
               cred
               bucket-name
               rel-path
@@ -84,7 +53,7 @@
   sync-state)
 
 (defn- print-complete-message [{:keys [errors deltas]}]
-  (cond 
+  (cond
     (not (empty? errors)) (println (str "\r"  (first errors) padding))
     (not (empty? deltas)) (println "Sync complete.")))
 
@@ -95,4 +64,3 @@
         (print-sync-state)
         (authorised-s3-push)
         (print-complete-message))))
-

@@ -25,21 +25,21 @@
 (deftest errors-when-an-option-is-missing-from-config
   (loop [config-keys (keys example-valid-config)]
     (when (not-empty config-keys)
-      (errors-when-missing 
-        (first config-keys) 
+      (errors-when-missing
+        (first config-keys)
         {:s3-sync (dissoc example-valid-config (first config-keys))}
-        []) 
+        [])
       (recur (rest config-keys)))))
 
 (declare resolve-example-cfg-with)
 
 (deftest config-can-be-overridden-from-command-line
-  (are [key args val] (= val (key (resolve-example-cfg-with args))) 
+  (are [key args val] (= val (key (resolve-example-cfg-with args)))
        :access-key [":access-key" "updated-value"] "updated-value"
        :secret-key [":secret-key" "updated-value"] "updated-value"
        :bucket     [":bucket" "updated-value"]     "updated-value"
        :local-dir  [":local-dir" "updated-value"]  "updated-value"
-       
+
        :access-key [":access-key"]                 "..."
        :access-key ["access-key" "ignored"]        "..."
        :access-key ["x" ":access-key" "updated"]   "updated"))

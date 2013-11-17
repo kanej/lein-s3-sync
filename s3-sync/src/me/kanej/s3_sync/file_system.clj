@@ -1,4 +1,4 @@
-(ns leiningen.s3-sync.file-system
+(ns me.kanej.s3-sync.file-system
   (:require [pandect.core :as p]))
 
 (declare relative-path)
@@ -27,4 +27,3 @@
         rel-path (relative-path root-path absolute-path)
         md5 (p/md5-file absolute-path)]
     {:path rel-path :md5 md5}))
- 

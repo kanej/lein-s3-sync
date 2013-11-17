@@ -1,6 +1,6 @@
-(ns leiningen.s3-sync.merge-test
+(ns me.kanej.s3-sync.merge-test
   (:require [clojure.test :refer :all]
-            [leiningen.s3-sync.merge :as m]))
+            [me.kanej.s3-sync.merge :as m]))
 
 (def hello-file-sync-state {:path "hello.txt" :md5 "09f7e02f1290be211da707a266f153b3"})
 (def world-file-sync-state {:path "world.txt" :md5 "52f83ff6877e42f613bcd2444c22528c"})
@@ -20,14 +20,14 @@
   (testing "when none of the files exist on s3 there is an upload delta for each"
     (let [expected-deltas #{[:upload hello-file-sync-state]
                             [:upload world-file-sync-state]
-                            [:upload subcontinent-file-sync-state]} 
+                            [:upload subcontinent-file-sync-state]}
           deltas (m/generate-deltas example-sync-state #{})]
       (is (= expected-deltas deltas))))
 
   (testing "when some of the files exist on s3 there is only a delta for the missing ones"
     (let [expected-deltas #{[:upload world-file-sync-state]
                             [:upload subcontinent-file-sync-state]}
-          remote-sync-state #{hello-file-sync-state} 
+          remote-sync-state #{hello-file-sync-state}
           actual-deltas (m/generate-deltas example-sync-state remote-sync-state)]
       (is (= expected-deltas actual-deltas))))
 

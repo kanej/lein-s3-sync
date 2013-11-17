@@ -1,6 +1,6 @@
-(ns leiningen.s3-sync.file-system-test
+(ns me.kanej.s3-sync.file-system-test
   (:require [clojure.test :refer :all]
-            [leiningen.s3-sync.file-system :as fs]))
+            [me.kanej.s3-sync.file-system :as fs]))
 
 (def hello-file-sync-state {:path "hello.txt" :md5 "09f7e02f1290be211da707a266f153b3"})
 (def world-file-sync-state {:path "world.txt" :md5 "52f83ff6877e42f613bcd2444c22528c"})

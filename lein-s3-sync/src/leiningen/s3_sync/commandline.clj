@@ -3,18 +3,18 @@
 (declare check-for-option)
 (declare nil-config-on-error)
 
-(def default-config 
+(def default-config
   {:access-key nil
    :secret-key nil
    :bucket nil
    :local-dir nil})
- 
+
 (def run-lein-help-for-details
   "\n       Run 'lein help s3-sync' for configuration details.")
 
-(def no-config-msg 
-  (str 
-    "Error: No :s3-sync config set in project or profiles." 
+(def no-config-msg
+  (str
+    "Error: No :s3-sync config set in project or profiles."
     run-lein-help-for-details))
 
 (defn missing-opt-msg [option]
@@ -55,7 +55,7 @@
         (nil-config-on-error))))
 
 (defn- check-for-option [[valid config errors :as result] option]
-  (if (and (contains? config option) (not (nil? (option config)))) 
+  (if (and (contains? config option) (not (nil? (option config))))
     result
     [false config (conj errors (missing-opt-msg option))]))
 
@@ -63,4 +63,4 @@
   (if (not valid)
     [valid nil errors]
     result))
- 
+
