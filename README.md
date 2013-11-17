@@ -10,9 +10,11 @@ pushed if it does not exist or has been changed locally.
 Useful for pushing the html/js/css output files of a leiningen project
 to S3 for hosting.
 
+The synchronisation functionality is available as a separate lib `s3-sync`, please see the [README](https://github.com/kanej/lein-s3-sync/blob/master/s3-sync) in this repos subfolder.
+
 ## Usage
 
-Put `[lein-s3-sync "0.1.0"]` into the `:plugins` vector of your
+Put `[lein-s3-sync "0.2.0"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
 lein-s3-sync 0.1.0`.
 
