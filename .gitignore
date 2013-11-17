@@ -13,3 +13,4 @@
 **/.lein-plugins
 **/.lein-repl-history
 **/profiles.clj
+**/dev.sh
