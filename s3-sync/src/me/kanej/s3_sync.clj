@@ -11,7 +11,9 @@
 (declare print-sync-complete-message)
 
 
-(defn sync-to-s3 [{:keys [access-key secret-key] :as cred} dir-path bucket-name]
+(defn sync-to-s3
+  "Syncronise the local directory 'dir-path' to the S3 bucket 'bucket-name'."
+  [{:keys [access-key secret-key] :as cred} dir-path bucket-name]
   (let [absolute-dir-path (fs/path->absolute-path dir-path)
         sync-state {:access-key access-key
                     :secret-key secret-key
@@ -28,7 +30,10 @@
 
 (def padding (apply str (take 30 (repeat " "))))
 
-(defn- capture-file-details [{:keys [access-key secret-key local-dir bucket-name] :as sync-state}]
+(defn- capture-file-details
+  "Pull the local directories file details and the S3 buckets file details
+   and associate them with the sync-state."
+  [{:keys [access-key secret-key local-dir bucket-name] :as sync-state}]
   (let [cred (select-keys sync-state [:access-key :secret-key])
         local-file-details (fs/analyse-local-directory local-dir)
         file-paths (->> local-file-details
@@ -38,15 +43,20 @@
     (merge sync-state {:local-file-details local-file-details
                        :remote-file-details remote-file-details})))
 
-(defn- calculate-deltas [{:keys [errors local-file-details remote-file-details] :as sync-state}]
+(defn- calculate-deltas
+  "Based on the local file details and the remote file details, calculate
+   which local files need to be pushed and which do not."
+  [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
     (let [deltas (m/generate-deltas local-file-details remote-file-details)]
       (assoc sync-state :deltas deltas))))
 
-(defn- push-deltas-to-s3 [{:keys [errors local-dir bucket-name] :as sync-state}]
+(defn- push-deltas-to-s3
+  "Pushes the local files named in the delta list to S3."
+  [{:keys [errors local-dir bucket-name deltas] :as sync-state}]
   (when (empty? errors)
     (let [cred (select-keys sync-state [:access-key :secret-key])]
-      (loop [deltas (:deltas sync-state)]
+      (loop [deltas deltas]
         (if (not (empty? deltas))
           (let [[op {rel-path :path}] (first deltas)]
             (print "  " rel-path "uploading ...")
