@@ -3,8 +3,6 @@
             [me.kanej.s3-sync.s3 :as s3]
             [me.kanej.s3-sync.merge :as m]))
 
-(def padding (apply str (take 30 (repeat " "))))
-
 (defn capture-file-details [{:keys [access-key secret-key local-dir bucket-name] :as sync-state}]
   (let [cred (select-keys sync-state [:access-key :secret-key])
         local-file-details (fs/analyse-local-directory local-dir)
@@ -12,7 +10,8 @@
                        (:local-file-details)
                        (map :path))
         remote-file-details (s3/analyse-s3-bucket cred bucket-name file-paths)]
-    (merge sync-state {:local-file-details local-file-details :remote-file-details remote-file-details})))
+    (merge sync-state {:local-file-details local-file-details
+                       :remote-file-details remote-file-details})))
 
 (defn calculate-deltas [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
@@ -31,7 +30,7 @@
              bucket-name
              rel-path
              (fs/combine-path local-dir rel-path))
-            (println "\r  " rel-path "done." padding)
+            (println "\r  " rel-path "done." (apply str (take 30 (repeat " "))))
             (recur (rest deltas)))))))
   sync-state)
 
@@ -40,8 +39,12 @@
 
 
 (defn sync-to-s3 [{:keys [access-key secret-key] :as cred} dir-path bucket-name]
-  (let [absolute-dir-path (fs/path->absolute-path dir-path)]
-    (-> {:access-key access-key :secret-key secret-key :local-dir absolute-dir-path :bucket-name bucket-name}
+  (let [absolute-dir-path (fs/path->absolute-path dir-path)
+        sync-state {:access-key access-key
+                    :secret-key secret-key
+                    :local-dir absolute-dir-path
+                    :bucket-name bucket-name}]
+    (-> sync-state
         (capture-file-details)
         (calculate-deltas)
         (print-delta-summary)
