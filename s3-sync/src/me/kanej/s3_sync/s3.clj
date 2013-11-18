@@ -26,9 +26,14 @@
            (map s3-lookup)
            (map response->file-details)
            (remove nil?)
-           (set)
-           (assoc bucket-sync-state :remote-file-details)))))
+           (set)))))
+
+(defn make-file-public [cred bucket-name key]
+  (let [grant (s3/grant :all-users :read)]
+    (s3/update-object-acl cred bucket-name key grant)))
 
 (defn put-file [cred bucket-name key file-path]
   (let [file (clojure.java.io/file file-path)]
     (s3/put-object cred bucket-name key file)))
+
+
