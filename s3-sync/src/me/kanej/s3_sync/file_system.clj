@@ -3,6 +3,7 @@
 
 (declare relative-path)
 (declare path->file-details)
+(declare path->absolute-path)
 
 (defn analyse-local-directory
   "Analyse a local directory returnings a set
@@ -11,13 +12,14 @@
    under the directory."
   [dir-path]
   (let [root-dir (clojure.java.io/file dir-path)
-        abs-root-dir-path (.getAbsolutePath root-dir)
-        dir-sync-description {:root-dir-path abs-root-dir-path}]
+        abs-dir-path (.getAbsolutePath root-dir)]
     (->> (file-seq root-dir)
          (filter #(not (.isDirectory %)))
-         (map (partial path->file-details abs-root-dir-path))
-         (set)
-         (assoc dir-sync-description :local-file-details))))
+         (map (partial path->file-details abs-dir-path))
+         (set))))
+
+(defn path->absolute-path [path]
+  (.getAbsolutePath (clojure.java.io/file path)))
 
 (defn- relative-path [root target]
   (.replaceAll target (str "^" root "/") ""))
@@ -27,3 +29,4 @@
         rel-path (relative-path root-path absolute-path)
         md5 (p/md5-file absolute-path)]
     {:path rel-path :md5 md5}))
+

@@ -12,7 +12,7 @@
     subcontinent-file-sync-state})
 
 (deftest resolving-the-md5-of-each-file-in-a-dir
-  (let [local-dir-details (:local-file-details (fs/analyse-local-directory "test/example"))]
+  (let [local-dir-details (fs/analyse-local-directory "test/example")]
     (is (= 3 (count local-dir-details)))
     (is (= example-sync-state local-dir-details))))
 

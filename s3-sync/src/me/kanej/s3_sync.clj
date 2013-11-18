@@ -5,24 +5,23 @@
 
 (def padding (apply str (take 30 (repeat " "))))
 
-(defn analyse-sync-state [cred dir-path bucket-name]
-  (let [local-file-state (fs/analyse-local-directory dir-path)
-        file-paths (->> local-file-state
+(defn analyse-sync-state [{:keys [access-key secret-key local-dir bucket-name] :as options}]
+  (let [cred (select-keys options [:access-key :secret-key])
+        local-file-details (fs/analyse-local-directory local-dir)
+        file-paths (->> local-file-details
                        (:local-file-details)
                        (map :path))
         s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)]
-    (merge local-file-state s3-file-state)))
+    (merge
+      {:local-file-details local-file-details :root-dir-path local-dir}
+      s3-file-state)))
 
 (defn calculate-deltas-from [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
     (let [deltas (m/generate-deltas local-file-details remote-file-details)]
       (assoc sync-state :deltas deltas))))
 
-(defn resolve-full-path [root-path rel-path]
-  (let [root (clojure.java.io/file root-path)
-        combined (clojure.java.io/file root rel-path)
-        abs-path (.getAbsolutePath combined)]
-    abs-path))
+(declare resolve-full-path)
 
 (defn push-changes-to-s3 [cred {:keys [errors root-dir-path bucket-name] :as sync-state}]
   (when (empty? errors)
@@ -39,6 +38,31 @@
           (recur (rest deltas))))))
   sync-state)
 
+(declare path->absolute-path)
+(declare print-sync-state)
+(declare print-complete-message)
+
+
+(defn sync-to-s3 [{:keys [access-key secret-key] :as cred} dir-path bucket-name]
+  (let [authorised-s3-push (partial push-changes-to-s3 cred)
+        absolute-dir-path (fs/path->absolute-path dir-path)]
+    (-> {:access-key access-key :secret-key secret-key :local-dir absolute-dir-path :bucket-name bucket-name}
+        (analyse-sync-state)
+        (calculate-deltas-from)
+        (print-sync-state)
+        (authorised-s3-push)
+        (print-complete-message))))
+
+;; Helper functions
+
+(defn resolve-full-path [root-path rel-path]
+  (let [root (clojure.java.io/file root-path)
+        combined (clojure.java.io/file root rel-path)
+        abs-path (.getAbsolutePath combined)]
+    abs-path))
+
+;; Print Functions
+
 (defn- print-sync-state [{:keys [errors deltas] :as sync-state}]
   (cond
     (not (empty? errors)) nil
@@ -51,11 +75,3 @@
   (cond
     (not (empty? errors)) (println (str "\r"  (first errors) padding))
     (not (empty? deltas)) (println "Sync complete.")))
-
-(defn sync-to-s3 [cred dir-path bucket-name]
-  (let [authorised-s3-push (partial push-changes-to-s3 cred)]
-    (-> (analyse-sync-state cred dir-path bucket-name)
-        (calculate-deltas-from)
-        (print-sync-state)
-        (authorised-s3-push)
-        (print-complete-message))))
