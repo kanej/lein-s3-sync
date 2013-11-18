@@ -21,6 +21,14 @@
 (defn path->absolute-path [path]
   (.getAbsolutePath (clojure.java.io/file path)))
 
+(defn combine-path [root-path rel-path]
+  (let [root (clojure.java.io/file root-path)
+        combined (clojure.java.io/file root rel-path)
+        abs-path (.getAbsolutePath combined)]
+    abs-path))
+
+;; Private Helper Functions
+
 (defn- relative-path [root target]
   (.replaceAll target (str "^" root "/") ""))
 
