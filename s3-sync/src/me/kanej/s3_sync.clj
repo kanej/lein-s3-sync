@@ -12,9 +12,7 @@
                        (:local-file-details)
                        (map :path))
         remote-file-details (s3/analyse-s3-bucket cred bucket-name file-paths)]
-    (merge
-      {:local-file-details local-file-details :root-dir-path local-dir}
-      {:remote-file-details remote-file-details :bucket-name bucket-name})))
+    (merge options {:local-file-details local-file-details :remote-file-details remote-file-details})))
 
 (defn calculate-deltas-from [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
@@ -23,7 +21,7 @@
 
 (declare resolve-full-path)
 
-(defn push-changes-to-s3 [cred {:keys [errors root-dir-path bucket-name] :as sync-state}]
+(defn push-changes-to-s3 [cred {:keys [errors local-dir bucket-name] :as sync-state}]
   (when (empty? errors)
     (loop [deltas (:deltas sync-state)]
       (if (not (empty? deltas))
@@ -33,7 +31,7 @@
             cred
             bucket-name
             rel-path
-            (resolve-full-path root-dir-path rel-path))
+            (resolve-full-path local-dir rel-path))
           (println "\r  " rel-path "done." padding)
           (recur (rest deltas))))))
   sync-state)
