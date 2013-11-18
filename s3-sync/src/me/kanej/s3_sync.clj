@@ -26,7 +26,7 @@
         (push-deltas-to-s3)
         (print-sync-complete-message))))
 
-;; Private Logic functions
+;; Private functions
 
 (def padding (apply str (take 30 (repeat " "))))
 
