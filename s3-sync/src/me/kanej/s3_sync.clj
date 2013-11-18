@@ -5,7 +5,7 @@
 
 (def padding (apply str (take 30 (repeat " "))))
 
-(defn analyse-sync-state [{:keys [access-key secret-key local-dir bucket-name] :as sync-state}]
+(defn capture-file-details [{:keys [access-key secret-key local-dir bucket-name] :as sync-state}]
   (let [cred (select-keys sync-state [:access-key :secret-key])
         local-file-details (fs/analyse-local-directory local-dir)
         file-paths (->> local-file-details
@@ -14,12 +14,12 @@
         remote-file-details (s3/analyse-s3-bucket cred bucket-name file-paths)]
     (merge sync-state {:local-file-details local-file-details :remote-file-details remote-file-details})))
 
-(defn calculate-deltas-from [{:keys [errors local-file-details remote-file-details] :as sync-state}]
+(defn calculate-deltas [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
     (let [deltas (m/generate-deltas local-file-details remote-file-details)]
       (assoc sync-state :deltas deltas))))
 
-(defn push-changes-to-s3 [{:keys [errors local-dir bucket-name] :as sync-state}]
+(defn push-deltas-to-s3 [{:keys [errors local-dir bucket-name] :as sync-state}]
   (when (empty? errors)
     (let [cred (select-keys sync-state [:access-key :secret-key])]
       (loop [deltas (:deltas sync-state)]
@@ -35,22 +35,22 @@
             (recur (rest deltas)))))))
   sync-state)
 
-(declare print-sync-state)
-(declare print-complete-message)
+(declare print-delta-summary)
+(declare print-sync-complete-message)
 
 
 (defn sync-to-s3 [{:keys [access-key secret-key] :as cred} dir-path bucket-name]
   (let [absolute-dir-path (fs/path->absolute-path dir-path)]
     (-> {:access-key access-key :secret-key secret-key :local-dir absolute-dir-path :bucket-name bucket-name}
-        (analyse-sync-state)
-        (calculate-deltas-from)
-        (print-sync-state)
-        (push-changes-to-s3)
-        (print-complete-message))))
+        (capture-file-details)
+        (calculate-deltas)
+        (print-delta-summary)
+        (push-deltas-to-s3)
+        (print-sync-complete-message))))
 
 ;; Print Functions
 
-(defn- print-sync-state [{:keys [errors deltas] :as sync-state}]
+(defn- print-delta-summary [{:keys [errors deltas] :as sync-state}]
   (cond
     (not (empty? errors)) nil
     (empty? deltas) (println "\rThere are no local changes to push." padding)
@@ -58,7 +58,7 @@
     :default (println "\nThere are" (count deltas)  "local file changes to upload:"))
   sync-state)
 
-(defn- print-complete-message [{:keys [errors deltas]}]
+(defn- print-sync-complete-message [{:keys [errors deltas]}]
   (cond
     (not (empty? errors)) (println (str "\r"  (first errors) padding))
     (not (empty? deltas)) (println "Sync complete.")))
