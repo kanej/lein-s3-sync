@@ -11,10 +11,10 @@
         file-paths (->> local-file-details
                        (:local-file-details)
                        (map :path))
-        s3-file-state (s3/analyse-s3-bucket cred bucket-name file-paths)]
+        remote-file-details (s3/analyse-s3-bucket cred bucket-name file-paths)]
     (merge
       {:local-file-details local-file-details :root-dir-path local-dir}
-      s3-file-state)))
+      {:remote-file-details remote-file-details :bucket-name bucket-name})))
 
 (defn calculate-deltas-from [{:keys [errors local-file-details remote-file-details] :as sync-state}]
   (if (empty? errors)
