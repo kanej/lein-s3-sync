@@ -18,14 +18,19 @@
              :bucket \"my-bucket\"
              :local-dir \"out/public\"}
 
-  The bucket given must exist and be accessible."
+  The bucket given must exist and be accessible.
+
+  An optional :public property can be passed as true in
+  the :s3-sync map to set uploaded files as readable by
+  all users."
   [project & keys]
   (let [[valid config errors] (cl/resolve-config project keys)]
     (if (not valid)
       (lein/abort (first errors))
       (let [cred (select-keys config [:access-key :secret-key])
             dir-path (:local-dir config)
-            bucket-name (:bucket config)]
+            bucket-name (:bucket config)
+            options (select-keys config [:public])]
         (print (str "Syncing bucket " bucket-name " with directory " dir-path))
-        (s3s/sync-to-s3 cred dir-path bucket-name)
+        (s3s/sync-to-s3 cred dir-path bucket-name options)
         (flush)))))

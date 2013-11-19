@@ -37,6 +37,10 @@ line:
 ```bash
     $ lein s3-sync :local-dir "./out/public" :bucket "www.mywebsite.com"
 ```
+
+An optional parameter of `:public true` can be set under the `:s3-sync`
+map set uploaded files as readable by all users in S3.
+
 ## License
 
 Copyright © 2013 John Kane

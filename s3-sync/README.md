@@ -19,13 +19,14 @@ to S3 for hosting.
 A local directory of html files is to be copied to S3:
 ```clojure
 (use 'me.kanej.s3-sync)
-    
+
 (def aws-credentials
   {:access-key "XXXXX"
    :secret-key "XXXXX"})
-       
+
 (sync-to-s3 aws-credentials "example/html_dir" "s3-bucket")
 ```
+
 The `sync-to-s3` function will recursively go
 through the files in the given local directory and upload them to S3
 if they don't exist in the bucket or are different (by MD5 hash).

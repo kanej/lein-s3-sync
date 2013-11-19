@@ -3,7 +3,7 @@
   :url "http://github.com/kanej/lein-s3-sync"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[me.kanej/s3-sync "0.2.0"]]
+  :dependencies [[me.kanej/s3-sync "0.3.0-SNAPSHOT"]]
   :test-selectors {:default (complement :integration)
                    :integration :integration
                    :all (constantly true)}
