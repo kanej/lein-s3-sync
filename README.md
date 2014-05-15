@@ -14,9 +14,9 @@ The synchronisation functionality is available as a separate lib `s3-sync`, plea
 
 ## Usage
 
-Put `[lein-s3-sync "0.2.0"]` into the `:plugins` vector of your
+Put `[lein-s3-sync "0.3.0"]` into the `:plugins` vector of your
 `:user` profile, or if you are on Leiningen 1.x do `lein plugin install
-lein-s3-sync 0.1.0`.
+lein-s3-sync 0.3.0`.
 
 Add to your profile an s3-sync config map, specifying your S3 credentials,
 the bucket to upload to and the local directory to sync:
@@ -43,6 +43,6 @@ map set uploaded files as readable by all users in S3.
 
 ## License
 
-Copyright © 2013 John Kane
+Copyright © 2014 John Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
