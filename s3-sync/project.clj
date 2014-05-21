@@ -12,7 +12,7 @@
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
                                   [org.clojure/java.classpath "0.2.0"]
-                                  [lein-light-nrepl "0.0.8"]]}}
+                                  [lein-light-nrepl "0.0.18"]]}}
   :test-selectors {:default (complement :integration)
                    :integration :integration
                    :all (constantly true)}
