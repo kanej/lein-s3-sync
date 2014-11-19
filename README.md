@@ -39,7 +39,19 @@ line:
 ```
 
 An optional parameter of `:public true` can be set under the `:s3-sync`
-map set uploaded files as readable by all users in S3.
+map to set uploaded files as readable by all users in S3.
+
+## Development
+
+To run the unit tests:
+```bash
+    $ lein sub test
+```
+
+To run the integration tests:
+```bash
+    $ lein sub test :integration
+```
 
 ## License
 
