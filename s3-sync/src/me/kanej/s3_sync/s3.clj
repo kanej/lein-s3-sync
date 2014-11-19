@@ -35,5 +35,3 @@
 (defn put-file [cred bucket-name key file-path]
   (let [file (clojure.java.io/file file-path)]
     (s3/put-object cred bucket-name key file)))
-
-

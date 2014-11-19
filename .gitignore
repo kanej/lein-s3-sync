@@ -15,3 +15,6 @@
 **/.nrepl-port
 **/profiles.clj
 **/dev.sh
+.lein-failures
+target/
+tmp/
