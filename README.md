@@ -14,11 +14,11 @@ The synchronisation functionality is available as a separate lib `s3-sync`, plea
 
 ## Usage
 
-Put `[lein-s3-sync "0.3.0"]` into the `:plugins` vector of your
-`:user` profile, or if you are on Leiningen 1.x do `lein plugin install
-lein-s3-sync 0.3.0`.
+Add `lein-s3-sync` as a plugin dependency of your project or profiles:
 
-Add to your profile an s3-sync config map, specifying your S3 credentials,
+![Clojars Project](http://clojars.org/lein-s3-sync/latest-version.svg)
+
+Add to your project or profile an s3-sync config map, specifying your S3 credentials,
 the bucket to upload to and the local directory to sync:
 ```clojure
 :s3-sync {
