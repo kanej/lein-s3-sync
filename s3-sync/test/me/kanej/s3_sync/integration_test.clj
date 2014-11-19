@@ -47,14 +47,15 @@
       (is (not contains-read-grant) (str "The file " s3-object-path " is not private.")))))
 
 (defn check-s3-object [s3-object-path expected-md5 visibility]
-  (if (s3/object-exists? cred integration-bucket "hello.txt")
-    (let [object-response (s3/get-object-metadata cred integration-bucket s3-object-path)
-          md5 (get object-response :etag)
-          acl-response (s3/get-object-acl cred integration-bucket s3-object-path)
-          grants (:grants acl-response)]
-      (is (= expected-md5 md5))
-      (assert-visibility visibility grants s3-object-path))
-    (is false (str "The file " s3-object-path " did not exist."))))
+  (let [file-exists (s3/object-exists? cred integration-bucket s3-object-path)]
+    (is file-exists (str "The file " s3-object-path " did not exist."))
+    (if file-exists
+      (let [object-response (s3/get-object-metadata cred integration-bucket s3-object-path)
+            md5 (get object-response :etag)
+            acl-response (s3/get-object-acl cred integration-bucket s3-object-path)
+            grants (:grants acl-response)]
+        (is (= expected-md5 md5))
+        (assert-visibility visibility grants s3-object-path)))))
 
 (defn setup-tmp-dir []
     (.mkdir (io/file "./tmp"))
