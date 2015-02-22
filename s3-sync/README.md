@@ -38,7 +38,7 @@ a change is made in the local directory.
 
 With Leiningen:
 ```clojure
-[me.kanej/s3-sync "0.3.0"]
+[me.kanej/s3-sync "0.4.0"]
 ```
 
 With Maven:
@@ -46,11 +46,11 @@ With Maven:
 <dependency>
   <groupId>me.kanej</groupId>
   <artifactId>s3-sync</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 ## License
 
-Copyright © 2014 John Kane
+Copyright © 2015 John Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
