@@ -32,12 +32,13 @@
 ;; Private Helper Functions
 
 (defn- root-path-regex [root]
-  (str "^" (Pattern/quote (str root File/separator))))
+  (let [updated-root (.replace root File/separator "/")]
+    (str "^" (str updated-root "/"))))
 
 (defn- relative-path [root target]
   (-> target
-    (.replaceAll (root-path-regex root) "")
-    (.replace File/separator "/")))
+    (.replace File/separator "/")
+    (.replaceAll (root-path-regex root) "")))
 
 (defn- path->file-details [root-path file]
   (let [absolute-path (.getAbsolutePath file)
