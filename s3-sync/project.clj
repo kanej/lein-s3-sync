@@ -1,4 +1,4 @@
-(defproject me.kanej/s3-sync "0.4.0-SNAPSHOT"
+(defproject me.kanej/s3-sync "0.4.0"
   :description "Library for syncing local folders to s3"
   :url "http://github.com/kanej/lein-s3-sync"
   :license {:name "Eclipse Public License"
