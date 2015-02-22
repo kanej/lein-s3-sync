@@ -1,5 +1,7 @@
 (ns me.kanej.s3-sync.file-system
-  (:require [pandect.core :as p]))
+  (:require [pandect.core :as p])
+  (:import [java.io File]
+           [java.util.regex Pattern]))
 
 (declare relative-path)
 (declare path->file-details)
@@ -29,8 +31,13 @@
 
 ;; Private Helper Functions
 
+(defn- root-path-regex [root]
+  (str "^" (Pattern/quote (str root File/separator))))
+
 (defn- relative-path [root target]
-  (.replaceAll target (str "^" root "/") ""))
+  (-> target
+    (.replaceAll (root-path-regex root) "")
+    (.replace File/separator "/")))
 
 (defn- path->file-details [root-path file]
   (let [absolute-path (.getAbsolutePath file)
