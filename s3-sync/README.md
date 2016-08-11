@@ -51,6 +51,6 @@ With Maven:
 ```
 ## License
 
-Copyright © 2015 John Kane
+Copyright © 2016 John Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.

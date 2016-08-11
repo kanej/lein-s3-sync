@@ -55,6 +55,6 @@ To run the integration tests:
 
 ## License
 
-Copyright © 2014 John Kane
+Copyright © 2016 Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
