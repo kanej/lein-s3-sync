@@ -30,7 +30,7 @@
       (let [cred (select-keys config [:access-key :secret-key])
             dir-path (:local-dir config)
             bucket-name (:bucket config)
-            options (select-keys config [:public])]
+            options (select-keys config [:public :metadata])]
         (print (str "Syncing bucket " bucket-name " with directory " dir-path))
         (s3s/sync-to-s3 cred dir-path bucket-name options)
         (flush)))))
