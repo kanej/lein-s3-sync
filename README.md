@@ -26,6 +26,8 @@ the bucket to upload to and the local directory to sync:
   :secret-key "XXX"
   :local-dir  "./out"
   :bucket     "mybucket"
+  public true
+  metadata {:cache-control "public, max-age=31536000"}
 }
 ```
 With the profile map setup, run a sync at the command line:
@@ -41,6 +43,15 @@ line:
 An optional parameter of `:public true` can be set under the `:s3-sync`
 map to set uploaded files as readable by all users in S3.
 
+Similarly S3 metadata options against the files can be passed under `:metadata`:
+
+```clojure
+:s3-sync {
+  ...
+  :options {:metadata {:cache-control "public, max-age=31536000"}}
+}
+```
+
 ## Development
 
 To run the unit tests:
@@ -55,6 +66,6 @@ To run the integration tests:
 
 ## License
 
-Copyright © 2016 Kane
+Copyright © 2017 Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.

@@ -31,10 +31,11 @@
   ;; Second sync
   (spit "./tmp/hello.txt" "bonjour" :append true)
   (spit "./tmp/sub/continent.txt" "plate" :append true)
-  (sync/sync-to-s3 cred "./tmp" integration-bucket {:public true})
-  (check-s3-object "hello.txt" "63434efb5d785a9be8d9b3b95049afcb" :public)
-  (check-s3-object "world.txt" "7d793037a0760186574b0282f2f435e7" :private)
-  (check-s3-object "sub/continent.txt" "a966e4779266cdbe9a671ab60f08429d" :public)
+  (sync/sync-to-s3 cred "./tmp" integration-bucket {:public true
+                                                    :metadata {:cache-control "public, max-age=31536000"}})
+  (check-s3-object "hello.txt" "63434efb5d785a9be8d9b3b95049afcb" :public {:cache-control "public, max-age=31536000"})
+  (check-s3-object "world.txt" "7d793037a0760186574b0282f2f435e7" :private )
+  (check-s3-object "sub/continent.txt" "a966e4779266cdbe9a671ab60f08429d" :public {:cache-control "public, max-age=31536000"})
 
   ;; Cleanup
   (clear-s3-bucket)
@@ -46,16 +47,21 @@
       (is contains-read-grant (str "The file " s3-object-path " is not public."))
       (is (not contains-read-grant) (str "The file " s3-object-path " is not private.")))))
 
-(defn check-s3-object [s3-object-path expected-md5 visibility]
-  (let [file-exists (s3/object-exists? cred integration-bucket s3-object-path)]
-    (is file-exists (str "The file " s3-object-path " did not exist."))
-    (if file-exists
-      (let [object-response (s3/get-object-metadata cred integration-bucket s3-object-path)
-            md5 (get object-response :etag)
-            acl-response (s3/get-object-acl cred integration-bucket s3-object-path)
-            grants (:grants acl-response)]
-        (is (= expected-md5 md5))
-        (assert-visibility visibility grants s3-object-path)))))
+(defn check-s3-object
+  ([s3-object-path expected-md5 visibility]
+   (check-s3-object s3-object-path expected-md5 visibility nil))
+  ([s3-object-path expected-md5 visibility metadata]
+   (let [file-exists (s3/object-exists? cred integration-bucket s3-object-path)]
+     (is file-exists (str "The file " s3-object-path " did not exist."))
+     (if file-exists
+       (let [object-response (s3/get-object-metadata cred integration-bucket s3-object-path)
+             md5 (get object-response :etag)
+             cache-control (get object-response :cache-control)
+             acl-response (s3/get-object-acl cred integration-bucket s3-object-path)
+             grants (:grants acl-response)]
+         (is (= expected-md5 md5))
+         (is (= (:cache-control metadata) cache-control))
+         (assert-visibility visibility grants s3-object-path))))))
 
 (defn setup-tmp-dir []
     (.mkdir (io/file "./tmp"))
