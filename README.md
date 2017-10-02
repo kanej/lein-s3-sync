@@ -26,8 +26,8 @@ the bucket to upload to and the local directory to sync:
   :secret-key "XXX"
   :local-dir  "./out"
   :bucket     "mybucket"
-  public true
-  metadata {:cache-control "public, max-age=31536000"}
+  :public true
+  :metadata {:cache-control "public, max-age=31536000"}
 }
 ```
 With the profile map setup, run a sync at the command line:
@@ -48,7 +48,7 @@ Similarly S3 metadata options against the files can be passed under `:metadata`:
 ```clojure
 :s3-sync {
   ...
-  :options {:metadata {:cache-control "public, max-age=31536000"}}
+  :metadata {:cache-control "public, max-age=31536000"}
 }
 ```
 
