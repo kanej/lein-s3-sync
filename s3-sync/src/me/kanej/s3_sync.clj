@@ -65,7 +65,8 @@
             bucket-name
             rel-path
             (fs/combine-path local-dir rel-path)
-            (:metadata options))
+            (:metadata options)
+            (:permissions options))
 
           (when (:public options)
             (s3/make-file-public aws-credentials bucket-name rel-path))

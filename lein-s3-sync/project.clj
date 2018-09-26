@@ -1,4 +1,4 @@
-(defproject lein-s3-sync "0.5.0"
+(defproject lein-s3-sync "0.5.1-SNAPSHOT"
   :description "Sync local folders to s3"
   :url "http://github.com/kanej/lein-s3-sync"
   :license {:name "Eclipse Public License"
@@ -6,7 +6,7 @@
   :scm {:name "git"
         :url "http://github.com/kanej/lein-s3-sync"
         :dir ".."}
-  :dependencies [[me.kanej/s3-sync "0.5.0"]]
+  :dependencies [[me.kanej/s3-sync "0.5.1-SNAPSHOT"]]
   :test-selectors {:default (complement :integration)
                    :integration :integration
                    :all (constantly true)}
