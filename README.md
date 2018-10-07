@@ -66,6 +66,6 @@ To run the integration tests:
 
 ## License
 
-Copyright © 2017 Kane
+Copyright © 2018 Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
