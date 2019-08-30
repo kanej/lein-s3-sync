@@ -6,9 +6,9 @@
   :scm {:name "git"
         :url "http://github.com/kanej/lein-s3-sync"
         :dir ".."}
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-aws-s3 "0.3.6"]
-                 [pandect "0.3.0"]]
+                 [digest "1.4.9"]]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
                                   [org.clojure/java.classpath "0.2.0"]
