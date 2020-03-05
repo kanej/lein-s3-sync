@@ -1,5 +1,6 @@
 (ns me.kanej.s3-sync.file-system
-  (:require [pandect.core :as p])
+  (:require [digest :as digest]
+            [clojure.java.io :as io])
   (:import [java.io File]
            [java.util.regex Pattern]))
 
@@ -43,6 +44,6 @@
 (defn- path->file-details [root-path file]
   (let [absolute-path (.getAbsolutePath file)
         rel-path (relative-path root-path absolute-path)
-        md5 (p/md5-file absolute-path)]
+        md5 (digest/md5 (io/as-file absolute-path))]
     {:path rel-path :md5 md5}))
 
