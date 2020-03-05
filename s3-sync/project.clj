@@ -1,4 +1,4 @@
-(defproject me.kanej/s3-sync "0.5.1"
+(defproject me.kanej/s3-sync "0.5.3"
   :description "Library for syncing local folders to s3"
   :url "http://github.com/kanej/lein-s3-sync"
   :license {:name "Eclipse Public License"
@@ -6,6 +6,7 @@
   :scm {:name "git"
         :url "http://github.com/kanej/lein-s3-sync"
         :dir ".."}
+  :deploy-repositories [["clojars" {:sign-releases false}]]
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-aws-s3 "0.3.6"]
                  [digest "1.4.9"]]
